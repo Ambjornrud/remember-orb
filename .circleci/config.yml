@@ -22,6 +22,17 @@ orb_prep_jobs: &orb_prep_jobs
       orb-tools/pack
     ]
 
+orb_integration-tests_jobs: &orb_integration-tests_jobs
+    [
+      recall-first-linux,
+      remember-linux,
+      recall-linux,
+      remember-mac,
+      recall-mac
+#      remember-windows,
+#      recall-windows
+    ]
+
 # Pipeline parameters
 parameters:
   # These pipeline parameters are required by the "trigger-integration-tests-workflow"
@@ -114,6 +125,10 @@ workflows:
   integration-tests_prod-release:
     when: << pipeline.parameters.run-integration-tests >>
     jobs:
+      # your integration test jobs go here: essentially, run all your orb's
+      # jobs and commands to ensure they behave as expected. or, run other
+      # integration tests of your choosing
+
       # integration tests for this orb
       - test-recall:
           name: recall-first-linux
@@ -161,7 +176,6 @@ workflows:
           add-pr-comment: false
           publish-version-tag: false
           fail-if-semver-not-indicated: false
-          requires:
-            - integration-tests
+          requires: *orb_integration-tests_jobs
           <<: [*filter-only-master]
           context: orb-publishing
