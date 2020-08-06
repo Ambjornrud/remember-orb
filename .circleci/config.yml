@@ -130,16 +130,16 @@ workflows:
       # integration tests of your choosing
 
       # integration tests for this orb
-      - test-recall:
-          name: recall-first-linux
-          exec: linux
-          env_var: FOO
+#      - test-recall:
+#          name: recall-first-linux
+#          exec: linux
+#          env_var: FOO
       - test-remember:
           name: remember-linux
           exec: linux
           env_var: FOO
-          requires:
-            - recall-first-linux
+#          requires:
+#            - recall-first-linux
       - test-recall:
           name: recall-linux
           exec: linux
