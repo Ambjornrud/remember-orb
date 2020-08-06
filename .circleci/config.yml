@@ -24,12 +24,12 @@ orb_prep_jobs: &orb_prep_jobs
 
 orb_integration-tests_jobs: &orb_integration-tests_jobs
     [
-      recall-first-linux,
-      remember-linux,
-      recall-linux,
-      remember-mac,
-      recall-mac
-#      remember-windows,
+      recall-first-linux
+      ,remember-linux
+      ,recall-linux
+#      ,remember-mac
+#      ,recall-mac
+#      ,remember-windows
 #      recall-windows
     ]
 
@@ -146,16 +146,16 @@ workflows:
           env_var: FOO
           requires:
             - remember-linux
-      - test-remember:
-          name: remember-mac
-          exec: mac
-          env_var: BAR
-      - test-recall:
-          name: recall-mac
-          exec: mac
-          env_var: BAR
-          requires:
-            - remember-mac
+      #- test-remember:
+      #    name: remember-mac
+      #    exec: mac
+      #    env_var: BAR
+      #- test-recall:
+      #    name: recall-mac
+      #    exec: mac
+      #    env_var: BAR
+      #    requires:
+      #      - remember-mac
       #- test-remember:
       #    name: remember-windows
       #    exec: win/default
