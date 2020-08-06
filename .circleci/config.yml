@@ -24,8 +24,8 @@ orb_prep_jobs: &orb_prep_jobs
 
 orb_integration-tests_jobs: &orb_integration-tests_jobs
     [
-      recall-first-linux
-      ,remember-linux
+#      recall-first-linux
+      remember-linux
       ,recall-linux
 #      ,remember-mac
 #      ,recall-mac
