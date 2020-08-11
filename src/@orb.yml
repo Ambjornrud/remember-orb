@@ -99,7 +99,11 @@ commands:
       - run:
           name: Recall << parameters.env_var >>
           command: |
-            exporter=$(cat /tmp/circleci_remember/.circleci_remember/<< parameters.env_var >> 2>/dev/null)
+            EXPORTER_FILE=/tmp/circleci_remember/.circleci_remember/<< parameters.env_var >>
+            if [ -r "$EXPORTER_FILE" ]; then
+              exporter=$(cat $EXPORTER_FILE)
+            fi
+
             if [ -z "$exporter" ]; then
               echo Environment variable '<< parameters.env_var >>' not found, please set with remember first.
             else

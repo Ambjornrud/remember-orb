@@ -22,6 +22,17 @@ orb_prep_jobs: &orb_prep_jobs
       orb-tools/pack
     ]
 
+orb_integration-tests_jobs: &orb_integration-tests_jobs
+    [
+#      recall-first-linux
+      remember-linux
+      ,recall-linux
+#      ,remember-mac
+#      ,recall-mac
+#      ,remember-windows
+#      recall-windows
+    ]
+
 # Pipeline parameters
 parameters:
   # These pipeline parameters are required by the "trigger-integration-tests-workflow"
@@ -96,8 +107,8 @@ workflows:
       # https://circleci.com/docs/2.0/managing-api-tokens
       - orb-tools/publish-dev:
           orb-name: ambjornrud/remember-orb
-          context: orb-publishing
           requires: *orb_prep_jobs
+          context: orb-publishing
 
       # trigger an integration workflow to test the
       # dev:${CIRCLE_SHA1:0:7} version of this orb
@@ -105,6 +116,7 @@ workflows:
           name: trigger-integration-dev
           requires:
             - orb-tools/publish-dev
+          context: orb-publishing
 
   # This `integration-tests_prod-release` workflow will only run
   # when the run-integration-tests pipeline parameter is set to true.
@@ -113,33 +125,37 @@ workflows:
   integration-tests_prod-release:
     when: << pipeline.parameters.run-integration-tests >>
     jobs:
+      # your integration test jobs go here: essentially, run all your orb's
+      # jobs and commands to ensure they behave as expected. or, run other
+      # integration tests of your choosing
+
       # integration tests for this orb
-      - test-recall:
-          name: recall-first-linux
-          exec: linux
-          env_var: FOO
+#      - test-recall:
+#          name: recall-first-linux
+#          exec: linux
+#          env_var: FOO
       - test-remember:
           name: remember-linux
           exec: linux
           env_var: FOO
-          requires:
-            - recall-first-linux
+#          requires:
+#            - recall-first-linux
       - test-recall:
           name: recall-linux
           exec: linux
           env_var: FOO
           requires:
             - remember-linux
-      - test-remember:
-          name: remember-mac
-          exec: mac
-          env_var: BAR
-      - test-recall:
-          name: recall-mac
-          exec: mac
-          env_var: BAR
-          requires:
-            - remember-mac
+      #- test-remember:
+      #    name: remember-mac
+      #    exec: mac
+      #    env_var: BAR
+      #- test-recall:
+      #    name: recall-mac
+      #    exec: mac
+      #    env_var: BAR
+      #    requires:
+      #      - remember-mac
       #- test-remember:
       #    name: remember-windows
       #    exec: win/default
@@ -160,6 +176,6 @@ workflows:
           add-pr-comment: false
           publish-version-tag: false
           fail-if-semver-not-indicated: false
-          requires:
-            - integration-tests
+          requires: *orb_integration-tests_jobs
           <<: [*filter-only-master]
+          context: orb-publishing
