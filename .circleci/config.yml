@@ -6,7 +6,7 @@ orbs:
   mem: ambjornrud/remember-orb@<<pipeline.parameters.dev-orb-version>>
 
 aliases:
-  - &EXPECTED_RESULT
+  - &CONSTANT_VALUE
       bar
 
   - &filter-only-master
@@ -24,8 +24,8 @@ orb_prep_jobs: &orb_prep_jobs
 
 orb_integration-tests_jobs: &orb_integration-tests_jobs
     [
-#      recall-first-linux
-      remember-linux
+      recall-first-linux
+      ,remember-linux
       ,recall-linux
 #      ,remember-mac
 #      ,recall-mac
@@ -59,18 +59,18 @@ jobs:
         type: executor
       env_var:
         type: string
-      expected-result:
+      value-to-store:
         type: string
         description: A constant value for this test
-        default: *EXPECTED_RESULT
+        default: *CONSTANT_VALUE
     executor: << parameters.exec >>
     steps:
       - mem/remember:
           env_var: << parameters.env_var >>
-          value: << parameters.expected-result >>
+          value: << parameters.value-to-store >>
       - run:
           name: I can use this right away...
-          command: '[[ $<< parameters.env_var >> == "<< parameters.expected-result >>" ]]'
+          command: '[[ $<< parameters.env_var >> == "<< parameters.value-to-store >>" ]]'
 
   test-recall:
     parameters:
@@ -81,7 +81,7 @@ jobs:
       expected-result:
         type: string
         description: A constant value for this test
-        default: *EXPECTED_RESULT
+        default: *CONSTANT_VALUE
     executor: << parameters.exec >>
     steps:
       - mem/recall:
@@ -130,16 +130,17 @@ workflows:
       # integration tests of your choosing
 
       # integration tests for this orb
-#      - test-recall:
-#          name: recall-first-linux
-#          exec: linux
-#          env_var: FOO
+      - test-recall:
+          name: recall-first-linux
+          exec: linux
+          env_var: FOO
+          expected-result: ""
       - test-remember:
           name: remember-linux
           exec: linux
           env_var: FOO
-#          requires:
-#            - recall-first-linux
+          requires:
+            - recall-first-linux
       - test-recall:
           name: recall-linux
           exec: linux
@@ -149,19 +150,21 @@ workflows:
       #- test-remember:
       #    name: remember-mac
       #    exec: mac
-      #    env_var: BAR
+      #    env_var: FOO
       #- test-recall:
       #    name: recall-mac
       #    exec: mac
-      #    env_var: BAR
+      #    env_var: FOO
       #    requires:
       #      - remember-mac
       #- test-remember:
       #    name: remember-windows
       #    exec: win/default
+      #    env_var: FOO
       #- test-recall:
       #    name: recall-windows
       #    exec: win/default
+      #    env_var: FOO
       #    requires:
       #      - remember-windows
 
